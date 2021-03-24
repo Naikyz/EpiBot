@@ -12,10 +12,10 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
-    console.log('Ready!');
+    console.log('Bot Started!');
 });
 
-client.on('message', message => {
+client.on('message', async(message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).split(/ +/);
@@ -24,10 +24,10 @@ client.on('message', message => {
     if (!client.commands.has(command)) return;
 
     try {
-        client.commands.get(command).execute(message, args);
+        await client.commands.get(command).execute(message, args, client);
     } catch (error) {
         console.error(error);
-        message.reply("Une erreur s'est prduite lors de l'execution de la commande");
+        await message.reply("Une erreur s'est prduite lors de l'execution de la commande");
     }
 });
 
