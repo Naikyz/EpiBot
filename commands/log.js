@@ -62,6 +62,19 @@ function changeEmbed(nb) {
     return changeEmbed;
 }
 
+function handleReact(reaction, user, client, newAnswer, emoji, number, message) {
+    if (check_name(newAnswer, user.id) == 0) {
+        newAnswer.push(new Answer(number, (message.guild.member(user).nickname !== null) ? message.guild.member(user).nickname + ` (@${user.username})` : `${user.username}`, user.id));
+        let embedSet = setEmbed(emoji);
+        user.send(embedSet);
+    } else if (check_name(newAnswer, user.id) == 1) {
+        change_react(newAnswer, user.id, number);
+        let embedChange = changeEmbed(emoji);
+        user.send(embedChange);
+    }
+    reaction.users.remove(user.id);
+}
+
 module.exports = {
     name: 'log',
     description: 'Test command',
@@ -96,66 +109,18 @@ module.exports = {
                 message.react("5️⃣")
                 client.on('messageReactionAdd', (reaction, user) => {
                     if (user.bot) return;
-                    if (reaction.emoji.name === "1️⃣" && user.id !== client.user.id) {
-                        if (check_name(newAnswer, user.id) == 0) {
-                            newAnswer.push(new Answer("1/5", (message.guild.member(user).nickname !== null) ? message.guild.member(user).nickname + ` (@${user.username})` : `${user.username}`, user.id));
-                            let embedSet = setEmbed("1️⃣");
-                            user.send(embedSet);
-                        } else if (check_name(newAnswer, user.id) == 1) {
-                            change_react(newAnswer, user.id, "1/5");
-                            let embedChange = changeEmbed("1️⃣");
-                            user.send(embedChange);
-                        }
+                    if (reaction.emoji.name !== "1️⃣" && reaction.emoji.name !== "2️⃣" && reaction.emoji.name !== "3️⃣" && reaction.emoji.name !== "4️⃣" && reaction.emoji.name !== "5️⃣")
                         reaction.users.remove(user.id);
-                    }
-                    if (reaction.emoji.name === "2️⃣" && user.id !== client.user.id) {
-                        if (check_name(newAnswer, user.id) == 0) {
-                            newAnswer.push(new Answer("2/5", (message.guild.member(user).nickname !== null) ? message.guild.member(user).nickname + ` (@${user.username})` : `${user.username}`, user.id));
-                            let embedSet = setEmbed("2️⃣");
-                            user.send(embedSet);
-                        } else {
-                            change_react(newAnswer, user.id, "2/5");
-                            let embedChange = changeEmbed("2️⃣");
-                            user.send(embedChange);
-                        }
-                        reaction.users.remove(user.id);
-                    }
-                    if (reaction.emoji.name === "3️⃣" && user.id !== client.user.id) {
-                        if (check_name(newAnswer, user.id) == 0) {
-                            newAnswer.push(new Answer("3/5", (message.guild.member(user).nickname !== null) ? message.guild.member(user).nickname + ` (@${user.username})` : `${user.username}`, user.id));
-                            let embedSet = setEmbed("3️⃣");
-                            user.send(embedSet);
-                        } else {
-                            change_react(newAnswer, user.id, "3/5");
-                            let embedChange = changeEmbed("3️⃣");
-                            user.send(embedChange);
-                        }
-                        reaction.users.remove(user.id);
-                    }
-                    if (reaction.emoji.name === "4️⃣" && user.id !== client.user.id) {
-                        if (check_name(newAnswer, user.id) == 0) {
-                            newAnswer.push(new Answer("4/5", (message.guild.member(user).nickname !== null) ? message.guild.member(user).nickname + ` (@${user.username})` : `${user.username}`, user.id));
-                            let embedSet = setEmbed("4️⃣");
-                            user.send(embedSet);
-                        } else {
-                            change_react(newAnswer, user.id, "4/5");
-                            let embedChange = changeEmbed("4️⃣");
-                            user.send(embedChange);
-                        }
-                        reaction.users.remove(user.id);
-                    }
-                    if (reaction.emoji.name === "5️⃣" && user.id !== client.user.id) {
-                        if (check_name(newAnswer, user.id) == 0) {
-                            newAnswer.push(new Answer("5/5", (message.guild.member(user).nickname !== null) ? message.guild.member(user).nickname + ` (@${user.username})` : `${user.username}`, user.id));
-                            let embedSet = setEmbed("5️⃣");
-                            user.send(embedSet);
-                        } else {
-                            change_react(newAnswer, user.id, "5/5");
-                            let embedChange = changeEmbed("5️⃣");
-                            user.send(embedChange);
-                        }
-                        reaction.users.remove(user.id);
-                    }
+                    if (reaction.emoji.name === "1️⃣" && user.id !== client.user.id)
+                        handleReact(reaction, user, client, newAnswer, "1️⃣", "1/5", message);
+                    if (reaction.emoji.name === "2️⃣" && user.id !== client.user.id)
+                        handleReact(reaction, user, client, newAnswer, "2️⃣", "2/5", message);
+                    if (reaction.emoji.name === "3️⃣" && user.id !== client.user.id)
+                        handleReact(reaction, user, client, newAnswer, "3️⃣", "3/5", message);
+                    if (reaction.emoji.name === "4️⃣" && user.id !== client.user.id)
+                        handleReact(reaction, user, client, newAnswer, "4️⃣", "4/5", message);
+                    if (reaction.emoji.name === "5️⃣" && user.id !== client.user.id)
+                        handleReact(reaction, user, client, newAnswer, "5️⃣", "5/5", message);
                 });
                 setTimeout(() => {
                     message.delete();
