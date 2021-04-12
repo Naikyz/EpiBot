@@ -12,20 +12,20 @@ class Answer {
 
 function check_name(Answer, userid) {
     let rt_val = 0;
-    Answer.forEach(element => {
-        if (userid === element.id)
+    for (var i = 0; i < Answer.length; i++) {
+        if (userid === Answer[i].id)
             rt_val = 1;
-    });
+    }
     return rt_val;
 }
 
 function change_react(Answer, userid, newNb) {
-    Answer.forEach(element => {
-        if (userid === element.id) {
-            element.number = newNb;
+    for (var i = 0; i < Answer.length; i++) {
+        if (userid === Answer[i].id) {
+            Answer[i].number = newNb;
             return;
         }
-    });
+    }
     return;
 }
 
@@ -62,7 +62,7 @@ function changeEmbed(nb) {
     return changeEmbed;
 }
 
-function handleReact(reaction, user, client, newAnswer, emoji, number, message) {
+function handleReact(r, user, newAnswer, emoji, number, message) {
     if (check_name(newAnswer, user.id) == 0) {
         newAnswer.push(new Answer(number, (message.guild.member(user).nickname !== null) ? message.guild.member(user).nickname + ` (@${user.username})` : `${user.username}`, user.id));
         let embedSet = setEmbed(emoji);
@@ -72,8 +72,10 @@ function handleReact(reaction, user, client, newAnswer, emoji, number, message) 
         let embedChange = changeEmbed(emoji);
         user.send(embedChange);
     }
-    reaction.users.remove(user.id);
+    r.users.remove(user.id);
 }
+
+const filter = (reaction, user) => ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].includes(reaction.emoji.names) && user.id === message.author.id;
 
 module.exports = {
     name: 'log',
@@ -101,26 +103,39 @@ module.exports = {
             .addField("Temps", "> Vous avez `" + args[0] + "` pour réagir au formulaire de log")
             .addField("Comment s'est passé votre journée ?", ":one: Pas bien :sob:\n\n :two: Bof :confused:\n\n:three: Sympa :slight_smile:\n\n:four: Cool :sunglasses:\n\n:five: Incroyable :laughing:")
         message.channel.send(embed)
-            .then(message => {
+            .then(async message => {
                 message.react("1️⃣")
                 message.react("2️⃣")
                 message.react("3️⃣")
                 message.react("4️⃣")
                 message.react("5️⃣")
-                client.on('messageReactionAdd', (reaction, user) => {
-                    if (user.bot) return;
-                    if (reaction.emoji.name !== "1️⃣" && reaction.emoji.name !== "2️⃣" && reaction.emoji.name !== "3️⃣" && reaction.emoji.name !== "4️⃣" && reaction.emoji.name !== "5️⃣")
-                        reaction.users.remove(user.id);
-                    if (reaction.emoji.name === "1️⃣" && user.id !== client.user.id)
-                        handleReact(reaction, user, client, newAnswer, "1️⃣", "1/5", message);
-                    if (reaction.emoji.name === "2️⃣" && user.id !== client.user.id)
-                        handleReact(reaction, user, client, newAnswer, "2️⃣", "2/5", message);
-                    if (reaction.emoji.name === "3️⃣" && user.id !== client.user.id)
-                        handleReact(reaction, user, client, newAnswer, "3️⃣", "3/5", message);
-                    if (reaction.emoji.name === "4️⃣" && user.id !== client.user.id)
-                        handleReact(reaction, user, client, newAnswer, "4️⃣", "4/5", message);
-                    if (reaction.emoji.name === "5️⃣" && user.id !== client.user.id)
-                        handleReact(reaction, user, client, newAnswer, "5️⃣", "5/5", message);
+
+                const oneFilter = (reaction, user) => reaction.emoji.name === "1️⃣" && user.id !== message.author.id;
+                const twoFilter = (reaction, user) => reaction.emoji.name === "2️⃣" && user.id !== message.author.id;
+                const threeFilter = (reaction, user) => reaction.emoji.name === "3️⃣" && user.id !== message.author.id;
+                const fourFilter = (reaction, user) => reaction.emoji.name === "4️⃣" && user.id !== message.author.id;
+                const fiveFilter = (reaction, user) => reaction.emoji.name === "5️⃣" && user.id !== message.author.id;
+
+                const one = message.createReactionCollector(oneFilter, {time: ms(time), dispose: true});
+                const two = message.createReactionCollector(twoFilter, {time: ms(time), dispose: true});
+                const three = message.createReactionCollector(threeFilter, {time: ms(time), dispose: true});
+                const four = message.createReactionCollector(fourFilter, {time: ms(time), dispose: true});
+                const five = message.createReactionCollector(fiveFilter, {time: ms(time), dispose: true});
+
+                one.on("collect", (r, user) => {
+                    handleReact(r, user, newAnswer, "1️⃣", "1/5", message)
+                });
+                two.on("collect", (r, user) => {
+                    handleReact(r, user, newAnswer, "2️⃣", "2/5", message)
+                });
+                three.on("collect", (r, user) => {
+                    handleReact(r, user, newAnswer, "3️⃣", "3/5", message)
+                });
+                four.on("collect", (r, user) => {
+                    handleReact(r, user, newAnswer, "4️⃣", "4/5", message)
+                });
+                five.on("collect", (r, user) => {
+                    handleReact(r, user, newAnswer, "5️⃣", "5/5", message)
                 });
                 setTimeout(() => {
                     message.delete();
