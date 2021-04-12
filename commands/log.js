@@ -157,6 +157,5 @@ module.exports = {
             newAnswer.splice(0, newAnswer.length);
             message.author.send(finish_send);
         }, ms(time))
-        return;
     }
 };
