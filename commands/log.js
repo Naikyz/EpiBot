@@ -90,11 +90,9 @@ function ping_roles(args) {
 
 module.exports = {
     name: 'logs',
-    description: 'Test command',
+    description: 'Logs command',
     execute(message, args) {
         message.delete();
-        if (message.member.roles.cache.some(role => role.name === perm)) {
-            message.channel.send(ping_roles(args)).then(async message => { message.delete(); });
             let time = args[0];
             let invalidTime = new Discord.MessageEmbed()
                 .setColor('#ff0101')
@@ -106,8 +104,10 @@ module.exports = {
                 message.author.send(invalidTime);
                 return;
             }
+            if (message.member.roles.cache.some(role => role.name === perm)) {
+                message.channel.send(ping_roles(args)).then(async message => { message.delete(); });
             let newAnswer = [];
-            let embed = new Discord.MessageEmbed()
+            let logOfTheDay = new Discord.MessageEmbed()
                 .setColor('#0187ff')
                 .setTitle(`Log du jour`)
                 .setAuthor(`${message.author.tag}`)
@@ -115,7 +115,7 @@ module.exports = {
                 .setThumbnail("https://images-ext-1.discordapp.net/external/nE6VlTPRFGNLPd3tq5U8J8Fwlli3EXrLa0M9qqGmO9U/https/i.imgur.com/8qCFYLj.png")
                 .addField("Temps", "> Vous avez `" + args[0] + "` pour réagir au formulaire de log")
                 .addField("Comment s'est passé votre journée ?", ":one: Pas bien :sob:\n\n :two: Bof :confused:\n\n:three: Sympa :slight_smile:\n\n:four: Cool :sunglasses:\n\n:five: Incroyable :laughing:")
-            message.channel.send(embed)
+            message.channel.send(logOfTheDay)
                 .then(async message => {
                     message.react("1️⃣")
                     message.react("2️⃣")
