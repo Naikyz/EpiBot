@@ -59,7 +59,7 @@ module.exports = {
             }).then(async channel => {
                 channel.send(closeTickets);
                 channel.send(`${message.guild.roles.cache.find(r => r.name === "AER")} : ${message.author} a ce problème :`);
-                channel.send(get_problem(args));
+                channel.send('```' + get_problem(args) + '```');
             });
         } else
             message.author.send(tooShort);
